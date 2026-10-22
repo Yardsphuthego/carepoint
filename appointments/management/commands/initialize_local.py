@@ -1,4 +1,4 @@
-"""Provision accounts once per local Docker database, never reset existing users."""
+"""Provision accounts once per local database, never reset existing users."""
 import os
 from pathlib import Path
 import secrets
@@ -9,11 +9,11 @@ from django.db import transaction
 
 
 class Command(BaseCommand):
-    help = "Initialize the isolated localhost Docker installation."
+    help = "Initialize the isolated localhost installation."
 
     def handle(self, *args, **options):
         if os.environ.get("CAREPOINT_LOCAL_SETUP") != "1":
-            raise CommandError("Only enabled by the local Docker setup.")
+            raise CommandError("Only enabled by the local setup.")
         credential_path = Path(os.environ.get("CAREPOINT_LOCAL_CREDENTIALS", "/data/local-logins.txt"))
         User = get_user_model()
         # The volume and existing accounts are the source of truth on restarts.

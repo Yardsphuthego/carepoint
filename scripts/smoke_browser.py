@@ -4,7 +4,11 @@ import subprocess
 from playwright.sync_api import sync_playwright
 
 compose = ['docker', 'compose', '-f', 'compose.local.yml']
-text = subprocess.check_output(compose + ['exec', '-T', 'web', 'cat', '/data/local-logins.txt'], text=True)
+if os.environ.get('CAREPOINT_NATIVE_SMOKE'):
+    from pathlib import Path
+    text = Path('.local-native/local-logins.txt').read_text()
+else:
+    text = subprocess.check_output(compose + ['exec', '-T', 'web', 'cat', '/data/local-logins.txt'], text=True)
 lines = text.splitlines()
 accounts = {line: lines[index + 1].removeprefix('Password: ') for index, line in enumerate(lines) if line.startswith('carepoint.')}
 front_port = os.environ.get('CAREPOINT_FRONTEND_PORT', '3100')

@@ -16,3 +16,5 @@ local-logins.txt
 .django-secret
 node_modules/
 *.zip
+
+.local-native/

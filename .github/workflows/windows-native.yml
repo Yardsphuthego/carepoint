@@ -1,0 +1,48 @@
+name: Windows without Docker
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install and initialize native app
+        shell: powershell
+        run: .\scripts\start-native.ps1 -SetupOnly
+      - name: Start servers
+        shell: powershell
+        run: |
+          Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File scripts/start-native.ps1 -NoBrowser' -RedirectStandardOutput native-output.log -RedirectStandardError native-errors.log
+          $deadline = (Get-Date).AddMinutes(10)
+          do {
+            try {
+              $response = Invoke-WebRequest http://localhost:3100 -UseBasicParsing -TimeoutSec 3
+              if ($response.StatusCode -eq 200) { exit 0 }
+            } catch { Start-Sleep -Seconds 5 }
+          } while ((Get-Date) -lt $deadline)
+          throw 'Native startup timed out'
+      - name: Install browser check tools
+        run: |
+          pip install playwright==1.58.0
+          python -m playwright install chromium
+      - name: Verify both account logins
+        env:
+          CAREPOINT_NATIVE_SMOKE: '1'
+        run: python scripts/smoke_browser.py
+      - name: Diagnostics
+        if: failure()
+        shell: powershell
+        run: |
+          Get-Content native-output.log -Tail 100 -ErrorAction SilentlyContinue
+          Get-Content native-errors.log -Tail 100 -ErrorAction SilentlyContinue

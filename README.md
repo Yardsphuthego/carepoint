@@ -2,6 +2,28 @@
 
 Carepoint combines a Reflex landing page and sign-in popup with Django patient booking and clinic administration.
 
+## Windows without Docker (recommended for direct installation)
+
+From PowerShell, install the two prerequisites once:
+
+```powershell
+winget install --id Python.Python.3.14 --exact --source winget
+winget install --id OpenJS.NodeJS.LTS --exact --source winget
+```
+
+Inside an existing Carepoint checkout, pull the latest code and run:
+
+```powershell
+& "$env:ProgramFiles\Git\cmd\git.exe" pull --ff-only
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-native.ps1
+```
+
+The launcher finds the standard Python/Node installations even if this terminal's PATH has not refreshed. It installs Python dependencies into separate environments, prepares a local SQLite database, creates patient/admin accounts once, starts Django and Reflex, and opens **http://localhost:3100**. The first run downloads frontend dependencies and can take several minutes.
+
+Keep the terminal open while using Carepoint. **Ctrl+C** stops both servers. Run the same `start-native.ps1` command next time. The generated login details are printed after startup and saved in `.local-native/local-logins.txt`. Data lives in `.local-native/db.sqlite3`; do not delete `.local-native` if you want to keep accounts and bookings. This folder is excluded from Git and Docker builds. Existing passwords are never reset by the launcher. Email verification links appear in the terminal.
+
+This mode uses ports 3100, 8100, and 8101 and cannot run alongside the Docker profile on the same ports. No Docker or WSL is required. A fresh native installation has its own passwords and database; it does not reuse Docker's data.
+
 ## Run on a friend's PC — one command
 
 Install **Git** and **Docker Desktop** and start Docker Desktop first. This repository is private, so the GitHub account used to clone must have access. Git will prompt for authentication when needed; never put an access token into the command.
