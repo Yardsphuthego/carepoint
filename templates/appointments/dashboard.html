@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_styles %}<link rel="stylesheet" href="{% static 'appointments/workspace.css' %}">{% endblock %}
+{% block title %}My appointments{% endblock %}
+{% block content %}
+<div class="cp-workspace cp-patient">
+<div class="cp-heading"><div><p class="cp-eyebrow">YOUR CARE, IN ONE PLACE</p><h1>Hello{% if user.first_name %}, {{ user.first_name }}{% endif %}.</h1><p>A clear view of your appointments. A little more peace of mind.</p></div><a class="button button-primary" href="{% url 'services' %}">Book an appointment →</a></div>
+<div class="cp-metrics"><article><span>Upcoming visits</span><strong>{{ upcoming_count }}</strong></article><article><span>Completed visits</span><strong>{{ completed_count }}</strong></article><article><span>Total appointments</span><strong>{{ total_count }}</strong></article></div>
+<div class="cp-dashboard-grid"><section class="cp-panel"><div class="cp-panel-heading"><h2>My appointments</h2><span>Your visit history</span></div>
+<div class="appointment-list">
+  {% for appointment in appointments %}
+    <article class="appointment-card">
+      <div class="appointment-date"><span>{{ appointment.slot.starts_at|date:"M" }}</span><strong>{{ appointment.slot.starts_at|date:"d" }}</strong><span>{{ appointment.slot.starts_at|date:"D" }}</span></div>
+      <div class="appointment-info">
+        <div class="appointment-title"><h2>{{ appointment.slot.service.name }}</h2><span class="status status-{{ appointment.status }}">{{ appointment.get_status_display }}</span></div>
+        <p>{{ appointment.slot.starts_at|date:"l, d F Y" }} at {{ appointment.slot.starts_at|date:"H:i" }} · {{ appointment.slot.service.duration_minutes }} minutes</p>
+      </div>
+      {% if appointment.is_upcoming %}
+        <div class="appointment-actions">
+          <a href="{% url 'reschedule_appointment' appointment.id %}">Reschedule</a>
+          <a class="danger-link" href="{% url 'cancel_appointment' appointment.id %}">Cancel</a>
+        </div>
+      {% endif %}
+    </article>
+  {% empty %}
+    <div class="cp-empty"><h2>No appointments yet</h2><p>When you book a visit, it will appear here.</p><a class="button button-primary" href="{% url 'services' %}">Browse services</a></div>
+  {% endfor %}
+</div>
+<p class="privacy-note">Your appointment details are visible only to you and authorised clinic staff.</p></section>
+<aside class="cp-panel"><div class="cp-panel-heading"><h2>Here to help you plan</h2></div><div class="cp-actions"><a href="{% url 'services' %}">Find an appointment <span>→</span></a><a href="{% url 'password_change' %}">Change your password <span>→</span></a><a href="{% url 'home' %}">Back to Carepoint <span>→</span></a></div><p class="cp-account-note">Plans changed? Use the reschedule or cancel option beside your upcoming appointment.</p></aside></div></div>
+{% endblock %}

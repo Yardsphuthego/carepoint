@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Verify your email{% endblock %}
+{% block content %}
+<div class="form-shell">
+  <p class="eyebrow">ONE LAST STEP</p>
+  <h1>Check your inbox</h1>
+  <p class="form-intro">We sent a verification link to your email address. Open it to activate your account and start booking appointments.</p>
+  <a class="button button-primary" href="{% url 'services' %}">Return to services</a>
+</div>
+{% endblock %}

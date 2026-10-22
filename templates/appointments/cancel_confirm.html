@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Cancel appointment{% endblock %}
+{% block content %}
+<div class="form-shell">
+  <a class="back-link" href="{% url 'dashboard' %}">← Back to my appointments</a>
+  <p class="eyebrow">CANCEL BOOKING</p>
+  <h1>Cancel this appointment?</h1>
+  <p class="form-intro">{{ appointment.slot.service.name }} · {{ appointment.slot.starts_at|date:"l, d F Y" }} at {{ appointment.slot.starts_at|date:"H:i" }}</p>
+  <form method="post" action="{% url 'confirm_cancel_appointment' appointment.id %}" class="form-card">
+    {% csrf_token %}
+    <p>The time will become available for another patient. This action cannot be undone.</p>
+    <div class="form-actions">
+      <button class="button button-danger" type="submit">Yes, cancel appointment</button>
+      <a class="button button-secondary" href="{% url 'dashboard' %}">Keep appointment</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="form-shell">
+  <a class="back-link" href="{% url 'dashboard' %}">← Back to my appointments</a>
+  <p class="eyebrow">{% if appointment %}UPDATE BOOKING{% else %}{{ service.name|upper }}{% endif %}</p>
+  <h1>{{ heading }}</h1>
+  <p class="form-intro">{% if appointment %}Choose a new time for your {{ service.name }} appointment.{% else %}Select an available time for your {{ service.name }} appointment.{% endif %}</p>
+  <form method="post" class="form-card">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="field-errors">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="field">
+      <label for="{{ form.slot.id_for_label }}">{{ form.slot.label }}</label>
+      {{ form.slot }}
+      {% for error in form.slot.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      {% if not form.slot.field.queryset.exists %}<p class="field-hint">No available times for this service at the moment.</p>{% endif %}
+    </div>
+    <button class="button button-primary" type="submit">{% if appointment %}Save new time{% else %}Confirm appointment{% endif %}</button>
+  </form>
+</div>
+{% endblock %}

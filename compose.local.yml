@@ -1,0 +1,54 @@
+name: carepoint
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    restart: unless-stopped
+    environment:
+      CAREPOINT_LOCAL_SETUP: "1"
+      DJANGO_DEBUG: "True"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,web
+      CAREPOINT_FRONTEND_URL: http://localhost:${CAREPOINT_FRONTEND_PORT:-3100}
+      DB_ENGINE: django.db.backends.sqlite3
+      DB_NAME: /data/db.sqlite3
+      EMAIL_BACKEND: django.core.mail.backends.console.EmailBackend
+    volumes:
+      - local_data:/data
+    ports:
+      - "127.0.0.1:${CAREPOINT_WEB_PORT:-8100}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    restart: unless-stopped
+    environment:
+      CAREPOINT_BOOKING_URL: http://localhost:${CAREPOINT_WEB_PORT:-8100}
+      CAREPOINT_API_INTERNAL_URL: http://web:8000
+      REFLEX_API_URL: http://localhost:${CAREPOINT_FRONTEND_PORT:-3100}
+      REFLEX_DEPLOY_URL: http://localhost:${CAREPOINT_FRONTEND_PORT:-3100}
+      REFLEX_FRONTEND_PORT: "3000"
+      REFLEX_BACKEND_PORT: "3000"
+      REFLEX_BACKEND_HOST: 0.0.0.0
+      REFLEX_TELEMETRY_ENABLED: "false"
+    depends_on:
+      web:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${CAREPOINT_FRONTEND_PORT:-3100}:3000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:3000/', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+
+volumes:
+  local_data:

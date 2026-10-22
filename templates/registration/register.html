@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_styles %}<link rel="stylesheet" href="{% static 'appointments/account.css' %}">{% endblock %}
+{% block title %}Create a patient account{% endblock %}
+{% block content %}
+<section class="account-screen">
+  <nav class="account-switch" aria-label="Patient account"><a href="{% url 'login' %}">Sign in</a><a href="{% url 'register' %}" aria-current="page">Create account</a></nav>
+  <div class="account-heading">
+  <h1>Your care starts here.</h1>
+  <p>Create an account to plan your next visit.</p></div>
+  <form method="post" class="account-form">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="account-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}
+      <div class="account-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<div class="field-hint">{{ field.help_text|safe }}</div>{% endif %}{% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+    {% endfor %}
+    <button class="account-submit" type="submit">Create patient account</button>
+    <p class="account-create">Already registered? <a href="{% url 'login' %}">Sign in</a>.</p>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Carepoint{% endblock %} · Health appointments</title>
+  <link rel="stylesheet" href="{% static 'appointments/site.css' %}">
+  {% block extra_styles %}{% endblock %}
+</head>
+<body>
+  <script>
+    if (window.self !== window.top) document.documentElement.classList.add('embedded-patient');
+    window.addEventListener('DOMContentLoaded', function () {
+      if (window.self === window.top) return;
+      document.querySelectorAll('form[action*=logout]').forEach(function (form) { form.target = '_top'; });
+      document.querySelectorAll('a').forEach(function (link) {
+        if (link.pathname === '/' || link.pathname === '/services/') link.target = '_top';
+      });
+    });
+  </script>
+  <header class="site-header">
+    <a class="brand" href="{% url 'home' %}"><span>Carepoint</span><span class="brand-tagline">Care that fits your life.</span></a>
+    <nav aria-label="Main navigation">
+      <a href="{% url 'services' %}">Services</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">My appointments</a>
+        {% if user.clinician_profile.is_active %}<a href="{% url 'clinician_dashboard' %}">Clinician workspace</a>{% endif %}
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}">Staff admin</a>{% endif %}
+        <form class="inline-form" action="{% url 'logout' %}" method="post">
+          {% csrf_token %}<button class="nav-button" type="submit">Sign out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Sign in</a>
+        <a class="nav-cta" href="{% url 'register' %}">Create account</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main class="page">
+    {% if messages %}
+      <div class="messages" aria-live="polite">
+        {% for message in messages %}<p class="message {{ message.tags }}">{{ message }}</p>{% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">Carepoint · Simple, convenient healthcare scheduling</footer>
+</body>
+</html>

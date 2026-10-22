@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Clinician workspace{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">CLINICIAN WORKSPACE</p><h1>Assigned appointments</h1><p>Welcome, {{ clinician }}. Only appointments assigned to you are shown.</p></div>
+</div>
+<div class="appointment-list">
+  {% for appointment in appointments %}
+    <article class="appointment-card">
+      <div class="appointment-date"><span>{{ appointment.slot.starts_at|date:"M" }}</span><strong>{{ appointment.slot.starts_at|date:"d" }}</strong><span>{{ appointment.slot.starts_at|date:"D" }}</span></div>
+      <div class="appointment-info">
+        <div class="appointment-title"><h2>{{ appointment.slot.service.name }}</h2><span class="status status-{{ appointment.status }}">{{ appointment.get_status_display }}</span></div>
+        <p>{{ appointment.slot.starts_at|date:"l, d F Y" }} at {{ appointment.slot.starts_at|date:"H:i" }} · {{ appointment.slot.service.duration_minutes }} minutes</p>
+        <p>Patient: {{ appointment.patient.get_full_name|default:appointment.patient.username }} · <a href="mailto:{{ appointment.patient.email }}">{{ appointment.patient.email }}</a></p>
+      </div>
+      {% if appointment.can_be_completed %}
+        <form method="post" action="{% url 'clinician_complete_appointment' appointment.id %}">
+          {% csrf_token %}<button class="button button-primary" type="submit">Mark completed</button>
+        </form>
+      {% endif %}
+    </article>
+  {% empty %}
+    <div class="empty-panel"><div class="service-icon">✳</div><h2>No appointments assigned</h2><p>New appointments assigned to you will appear here.</p></div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+<div class="cp-workspace">
+  <div class="cp-heading"><div><p class="cp-eyebrow">CLINIC WORKSPACE</p><h1>A clear view of your day.</h1><p>Welcome back, {{ user.first_name|default:user.username }}. Keep your clinic’s appointments moving.</p></div><span class="cp-date">{% now "l, d F Y" %}</span></div>
+  <div class="cp-metrics">{% for metric in clinic_metrics %}<article><span>{{ metric.label }}</span><strong>{{ metric.value }}</strong></article>{% endfor %}</div>
+  <div class="cp-dashboard-grid"><section class="cp-panel"><div class="cp-panel-heading"><h2>Upcoming appointments</h2><span>Next visits</span></div>
+    {% if clinic_appointments %}<div class="cp-table-wrap"><table class="cp-table"><thead><tr><th>Patient</th><th>Service</th><th>Appointment</th></tr></thead><tbody>{% for appointment in clinic_appointments %}<tr><td><a href="{% url 'admin:appointments_appointment_change' appointment.pk %}">{{ appointment.patient.get_full_name|default:appointment.patient.username }}</a></td><td>{{ appointment.slot.service.name }}</td><td>{{ appointment.slot.starts_at|date:"d M · H:i" }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="cp-empty"><h3>Your schedule is clear.</h3><p>Upcoming appointments will appear here when patients book.</p></div>{% endif %}
+  </section><aside class="cp-panel"><div class="cp-panel-heading"><h2>Quick access</h2></div><div class="cp-actions">{% for action in clinic_actions %}<a href="{{ action.url }}">{{ action.label }} <span aria-hidden="true">→</span></a>{% empty %}<p>No management permissions assigned.</p>{% endfor %}</div></aside></div>
+</div>
+{% endblock %}

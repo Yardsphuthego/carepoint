@@ -1,0 +1,19 @@
+FROM python:3.14-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY manage.py .
+COPY config ./config
+COPY appointments ./appointments
+COPY templates ./templates
+COPY static ./static
+COPY docker/local_entrypoint.py ./docker/local_entrypoint.py
+RUN python manage.py collectstatic --noinput \
+    && groupadd --system carepoint \
+    && useradd --system --gid carepoint carepoint \
+    && mkdir -p /data \
+    && chown -R carepoint:carepoint /app /data
+USER carepoint
+EXPOSE 8000
+CMD ["python", "docker/local_entrypoint.py"]

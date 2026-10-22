@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sign in{% endblock %}
+{% block extra_styles %}<link rel="stylesheet" href="{% static 'appointments/account.css' %}">{% endblock %}
+{% block content %}
+<section class="account-screen">
+  <nav class="account-switch" aria-label="Patient account">
+    <a href="{% url 'login' %}" aria-current="page">Sign in</a>
+    <a href="{% url 'register' %}">Create account</a>
+  </nav>
+  <div class="account-heading">
+    <h1>Welcome back.</h1>
+    <p>A little closer to your next visit.</p>
+  </div>
+  <form method="post" class="account-form">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="account-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="account-field">
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+      {% for error in form.username.errors %}<p class="account-error">{{ error }}</p>{% endfor %}
+    </div>
+    <div class="account-field">
+      <div class="account-label-row"><label for="{{ form.password.id_for_label }}">Password</label><a href="{% url 'password_reset' %}">Forgot password?</a></div>
+      <div class="account-password">{{ form.password }}<button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false">Show</button></div>
+      {% for error in form.password.errors %}<p class="account-error">{{ error }}</p>{% endfor %}
+    </div>
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <button class="account-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+  </form>
+  <p class="account-create">New to Carepoint? <a href="{% url 'register' %}">Let’s get you started</a></p>
+  <div class="account-benefit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 11h18M8 3v4M16 3v4m-8 9 3 3 5-5"/></svg><span>Book, reschedule, and keep track of your visits.</span></div>
+</section>
+<script>
+const username = document.getElementById('{{ form.username.id_for_label }}');
+username.placeholder = 'Enter your username';
+const password = document.getElementById('{{ form.password.id_for_label }}');
+password.placeholder = 'Enter your password';
+document.querySelector('.password-toggle').addEventListener('click', function () {
+  const show = password.type === 'password';
+  password.type = show ? 'text' : 'password';
+  this.textContent = show ? 'Hide' : 'Show';
+  this.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  this.setAttribute('aria-pressed', String(show));
+});
+</script>
+{% endblock %}

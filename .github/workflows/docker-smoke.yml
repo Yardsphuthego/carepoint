@@ -1,0 +1,36 @@
+name: Docker startup and login checks
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose configuration
+        run: docker compose -f compose.local.yml config --quiet
+      - name: Build and start Carepoint
+        run: docker compose -f compose.local.yml up --build --detach --wait --wait-timeout 900
+      - name: Test fresh-account initialization
+        run: docker compose -f compose.local.yml exec -T web python manage.py test appointments.test_local_setup --noinput
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser check tools
+        run: |
+          pip install playwright==1.58.0
+          python -m playwright install --with-deps chromium
+      - name: Check patient and administrator logins
+        run: python scripts/smoke_browser.py
+      - name: Show service diagnostics on failure
+        if: failure()
+        run: |
+          docker compose -f compose.local.yml ps
+          docker compose -f compose.local.yml logs --tail=80
+      - name: Stop containers
+        if: always()
+        run: docker compose -f compose.local.yml down

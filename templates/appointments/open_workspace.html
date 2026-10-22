@@ -1,0 +1,5 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Opening your Carepoint workspace</title></head><body>
+<p>Opening your workspace… <a href="{{ workspace_path }}" target="_top">Continue to your dashboard</a></p>
+{{ workspace_path|json_script:"workspace-path" }}
+<script>window.parent.postMessage({type:'carepoint:workspace',path:JSON.parse(document.getElementById('workspace-path').textContent)}, '*');</script>
+</body></html>
