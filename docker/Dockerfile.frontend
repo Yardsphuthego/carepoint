@@ -8,7 +8,7 @@ WORKDIR /app
 COPY frontend/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt \
     && useradd --create-home --uid 1000 carepoint \
-    && chown carepoint:carepoint /app
+    && chown -R carepoint:carepoint /app
 COPY --chown=carepoint:carepoint frontend/rxconfig.py ./rxconfig.py
 COPY --chown=carepoint:carepoint frontend/carepoint ./carepoint
 COPY --chown=carepoint:carepoint frontend/assets ./assets
