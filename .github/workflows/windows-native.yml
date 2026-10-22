@@ -20,26 +20,28 @@ jobs:
       - name: Install and initialize native app
         shell: powershell
         run: .\scripts\start-native.ps1 -SetupOnly
-      - name: Start servers
-        shell: powershell
-        run: |
-          Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File scripts/start-native.ps1 -NoBrowser' -RedirectStandardOutput native-output.log -RedirectStandardError native-errors.log
-          $deadline = (Get-Date).AddMinutes(10)
-          do {
-            try {
-              $response = Invoke-WebRequest http://localhost:3100 -UseBasicParsing -TimeoutSec 3
-              if ($response.StatusCode -eq 200) { exit 0 }
-            } catch { Start-Sleep -Seconds 5 }
-          } while ((Get-Date) -lt $deadline)
-          throw 'Native startup timed out'
       - name: Install browser check tools
         run: |
           pip install playwright==1.58.0
           python -m playwright install chromium
-      - name: Verify both account logins
+      - name: Start servers and verify both account logins
+        shell: powershell
         env:
           CAREPOINT_NATIVE_SMOKE: '1'
-        run: python scripts/smoke_browser.py
+        run: |
+          $server = Start-Process powershell -PassThru -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File scripts/start-native.ps1 -NoBrowser' -RedirectStandardOutput native-output.log -RedirectStandardError native-errors.log
+          $deadline = (Get-Date).AddMinutes(10)
+          $ready = $false
+          do {
+            if ($server.HasExited) { throw 'Native launcher exited during startup' }
+            try {
+              $response = Invoke-WebRequest http://localhost:3100 -UseBasicParsing -TimeoutSec 3
+              if ($response.StatusCode -eq 200) { $ready = $true; break }
+            } catch { Start-Sleep -Seconds 5 }
+          } while ((Get-Date) -lt $deadline)
+          if (-not $ready) { throw 'Native startup timed out' }
+          python scripts/smoke_browser.py
+          if ($LASTEXITCODE -ne 0) { throw 'Browser login checks failed' }
       - name: Diagnostics
         if: failure()
         shell: powershell
