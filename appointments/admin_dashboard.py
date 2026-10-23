@@ -20,5 +20,7 @@ def dashboard_callback(request, context):
     if request.user.has_perm('auth.view_user'):
         metrics.append({'label': 'Patient accounts', 'value': get_user_model().objects.filter(is_staff=False, clinician_profile__isnull=True).count()})
         actions.append({'label': 'Manage accounts', 'url': reverse('admin:auth_user_changelist')})
+    if request.user.has_perm('appointments.view_clinician'):
+        actions.insert(1, {'label': 'Manage doctors', 'url': reverse('admin:appointments_clinician_changelist')})
     context.update(clinic_metrics=metrics, clinic_actions=actions)
     return context

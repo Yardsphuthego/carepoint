@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ title }} | Carepoint{% endblock %}
+{% block bodyclass %}{{ block.super }} cp-admin-shell{% endblock %}
+{% block header %}
+  {% if not is_popup and has_permission %}
+  <header class="cp-admin-topbar">
+    <div class="cp-admin-toprow">
+      <a class="cp-admin-wordmark" href="{% url 'admin:index' %}"><strong>Carepoint</strong><span>Care that fits your life.</span></a>
+      <div class="cp-admin-account">
+        <a class="cp-admin-site-link" href="{{ site_url|default:'/' }}">View website ↗</a>
+        <details class="cp-admin-profile">
+          <summary>{{ user.first_name|default:user.username }} <span aria-hidden="true">⌄</span></summary>
+          <div class="cp-admin-profile-menu">
+            <span>Clinic administrator</span>
+            {% include 'unfold/helpers/account_links.html' %}
+          </div>
+        </details>
+      </div>
+    </div>
+    <nav class="cp-admin-navigation" aria-label="Clinic navigation">
+      <a href="{% url 'admin:index' %}" {% if request.resolver_match.url_name == 'index' %}aria-current="page"{% endif %}>Overview</a>
+      {% if perms.appointments.view_appointment %}<a href="{% url 'admin:appointments_appointment_changelist' %}" {% if opts.model_name == 'appointment' %}aria-current="page"{% endif %}>Appointments</a>{% endif %}
+      {% if perms.appointments.view_clinician %}<a href="{% url 'admin:appointments_clinician_changelist' %}" {% if opts.model_name == 'clinician' %}aria-current="page"{% endif %}>Doctors</a>{% endif %}
+      {% if perms.appointments.view_appointmentslot %}<a href="{% url 'admin:appointments_appointmentslot_changelist' %}" {% if opts.model_name == 'appointmentslot' %}aria-current="page"{% endif %}>Availability</a>{% endif %}
+      {% if perms.appointments.view_service %}<a href="{% url 'admin:appointments_service_changelist' %}" {% if opts.model_name == 'service' %}aria-current="page"{% endif %}>Services</a>{% endif %}
+      {% if perms.auth.view_user %}<a href="{% url 'admin:auth_user_changelist' %}" {% if opts.model_name == 'user' %}aria-current="page"{% endif %}>Accounts</a>{% endif %}
+      {% if perms.auth.view_group %}<a href="{% url 'admin:auth_group_changelist' %}" {% if opts.model_name == 'group' %}aria-current="page"{% endif %}>Roles</a>{% endif %}
+      {% if perms.axes.view_accessattempt %}<a href="{% url 'admin:axes_accessattempt_changelist' %}" {% if opts.app_label == 'axes' %}aria-current="page"{% endif %}>Login activity</a>{% endif %}
+    </nav>
+  </header>
+  {% endif %}
+  {% if request.resolver_match.url_name != 'index' %}
+    {% include 'unfold/helpers/header.html' %}
+  {% endif %}
+{% endblock %}

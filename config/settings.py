@@ -159,7 +159,7 @@ UNFOLD = {
     "SITE_SUBHEADER": "Care that fits your life.",
     "THEME": "light",
     "DASHBOARD_CALLBACK": "appointments.admin_dashboard.dashboard_callback",
-    "STYLES": [lambda request: static("appointments/workspace.css")],
+    "STYLES": [lambda request: static("appointments/workspace.css"), lambda request: static("appointments/admin.css")],
     "COLORS": {"primary": {
         "50": "#f0f9ff", "100": "#e0f2fe", "200": "#bae6fd",
         "300": "#7dd3fc", "400": "#38bdf8", "500": "#0785d9",

@@ -1,8 +1,12 @@
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.contrib.auth.models import Group
+from axes.admin import AccessAttemptAdmin, AccessLogAdmin, AccessFailureLogAdmin
+from axes.models import AccessAttempt, AccessLog, AccessFailureLog
 from django.utils import timezone
 from unfold.admin import ModelAdmin, TabularInline
+from unfold.forms import UserCreationForm, UserChangeForm, AdminPasswordChangeForm
 
 from .models import Appointment, AppointmentSlot, Clinician, Service
 from .notifications import send_appointment_notification
@@ -12,6 +16,20 @@ from .services import AppointmentError, cancel_appointment
 User = get_user_model()
 admin.site.unregister(User)
 admin.site.index_title = "Clinic overview"
+admin.site.enable_nav_sidebar = False
+admin.site.password_change_template = "admin/password_change_form.html"
+admin.site.password_change_done_template = "admin/password_change_done.html"
+
+# Keep the third-party management screens in the same Unfold layout.
+for model, base_admin in (
+    (Group, GroupAdmin),
+    (AccessAttempt, AccessAttemptAdmin),
+    (AccessLog, AccessLogAdmin),
+    (AccessFailureLog, AccessFailureLogAdmin),
+):
+    if admin.site.is_registered(model):
+        admin.site.unregister(model)
+    admin.site.register(model, type(f"Carepoint{base_admin.__name__}", (base_admin, ModelAdmin), {}))
 
 
 class AppointmentSlotInline(TabularInline):
@@ -43,6 +61,9 @@ class ClinicianAdmin(ModelAdmin):
 
 @admin.register(User)
 class PatientAdmin(UserAdmin, ModelAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
     list_display = (
         "username",
         "first_name",

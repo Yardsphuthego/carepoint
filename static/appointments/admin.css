@@ -1,0 +1,31 @@
+.cp-admin-shell #main { background: #f5f8fb; }
+.cp-admin-topbar { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid #dfe8ef; box-shadow: 0 3px 16px #243d5510; }
+.cp-admin-toprow, .cp-admin-navigation { max-width: 1320px; margin: auto; padding: 0 24px; }
+.cp-admin-toprow { min-height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.cp-admin-wordmark { display: flex; flex-direction: column; gap: 3px; text-decoration: none; }
+.cp-admin-wordmark strong { font: 800 27px/1.2 'Manrope', sans-serif; letter-spacing: -1px; color: #203647; }
+.cp-admin-wordmark>span { color: #748593; font-size: 11px; }
+.cp-admin-account { display: flex; align-items: center; gap: 24px; font-size: 13px; }
+.cp-admin-site-link { color: #627c90; }
+.cp-admin-profile { position: relative; }
+.cp-admin-profile summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 18px; padding: 10px 16px; border: 1px solid #dfebf3; border-radius: 8px; color: #25475e; font-weight: 600; background: #f7fafc; }
+.cp-admin-profile summary::-webkit-details-marker { display: none; }
+.cp-admin-profile-menu { position: absolute; right: 0; top: calc(100% + 8px); width: 230px; padding: 12px 6px; border: 1px solid #e1eaf1; border-radius: 10px; background: white; box-shadow: 0 12px 30px #17344d20; display: flex; flex-direction: column; }
+.cp-admin-profile-menu>span { padding: 6px 15px 12px; font-size: 11px; color: #728594; }
+.cp-admin-navigation { display: flex; gap: 28px; overflow-x: auto; scrollbar-width: thin; }
+.cp-admin-navigation>a { white-space: nowrap; padding: 15px 0; border-bottom: 3px solid transparent; color: #637889; font-size: 13px; font-weight: 600; }
+.cp-admin-navigation>a:hover { color: #0785d9; }
+.cp-admin-navigation>a[aria-current] { color: #027bc3; border-color: #0785d9; }
+.cp-admin-topbar a:focus-visible, .cp-admin-topbar summary:focus-visible { outline: 2px solid #0785d9; outline-offset: 3px; }
+.cp-admin-shell .cp-workspace { padding-top: 36px; }
+.cp-admin-shell .cp-heading h1 { font-size: 30px; }
+.cp-admin-shell .cp-panel, .cp-admin-shell .cp-metrics article { box-shadow: 0 3px 12px #294c6b04; }
+@media(max-width: 640px) {
+  .cp-admin-toprow, .cp-admin-navigation { padding-left: 16px; padding-right: 16px; }
+  .cp-admin-toprow { min-height: 76px; gap: 10px; }
+  .cp-admin-wordmark strong { font-size: 23px; }
+  .cp-admin-site-link { display: none; }
+  .cp-admin-profile summary { padding: 9px 12px; max-width: 160px; overflow-wrap: anywhere; }
+  .cp-admin-navigation { gap: 24px; }
+  .cp-admin-shell .cp-workspace { padding-top: 24px; }
+}
