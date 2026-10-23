@@ -87,7 +87,9 @@ def register(request):
                 "We couldn't send the verification email. Please try again shortly.",
             )
         else:
-            return render(request, "registration/verification_sent.html")
+            return render(request, "registration/verification_sent.html", {
+                "console_email": settings.EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend",
+            })
     return render(request, "registration/register.html", {"form": form})
 
 

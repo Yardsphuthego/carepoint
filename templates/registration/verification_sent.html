@@ -3,8 +3,13 @@
 {% block content %}
 <div class="form-shell">
   <p class="eyebrow">ONE LAST STEP</p>
+  {% if console_email %}
+  <h1>Activate your local account</h1>
+  <p class="form-intro">Email delivery is turned off for this local installation. Find the verification link in the PowerShell window running Carepoint and open it in this browser to activate your account.</p>
+  {% else %}
   <h1>Check your inbox</h1>
   <p class="form-intro">We sent a verification link to your email address. Open it to activate your account and start booking appointments.</p>
+  {% endif %}
   <a class="button button-primary" href="{% url 'services' %}">Return to services</a>
 </div>
 {% endblock %}
