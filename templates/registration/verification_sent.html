@@ -3,13 +3,21 @@
 {% block content %}
 <div class="form-shell">
   <p class="eyebrow">ONE LAST STEP</p>
-  {% if console_email %}
+  {% if local_verification_url %}
+  <h1>Your account is almost ready.</h1>
+  <p class="form-intro">You’re running Carepoint locally. Activate your patient account here to start booking appointments.</p>
+  <a class="button button-primary" href="{{ local_verification_url }}">Activate account →</a>
+  <details style="margin-top: 20px; font-size: 13px;">
+    <summary style="cursor: pointer;">View verification link</summary>
+    <a href="{{ local_verification_url }}" style="display: block; overflow-wrap: anywhere; margin-top: 12px;">{{ local_verification_url }}</a>
+  </details>
+  {% elif console_email %}
   <h1>Activate your local account</h1>
   <p class="form-intro">Email delivery is turned off for this local installation. Find the verification link in the PowerShell window running Carepoint and open it in this browser to activate your account.</p>
   {% else %}
   <h1>Check your inbox</h1>
   <p class="form-intro">We sent a verification link to your email address. Open it to activate your account and start booking appointments.</p>
   {% endif %}
-  <a class="button button-primary" href="{% url 'services' %}">Return to services</a>
+  {% if not local_verification_url %}<a class="button button-primary" href="{% url 'services' %}">Return to services</a>{% endif %}
 </div>
 {% endblock %}
