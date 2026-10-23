@@ -2,6 +2,14 @@
 
 Carepoint combines a Reflex landing page and sign-in popup with Django patient booking and clinic administration.
 
+## Share Carepoint
+
+Scan this QR code to open this GitHub repository.
+
+<img src="docs/carepoint-github-qr.png" alt="QR code linking to the Carepoint GitHub repository" width="280">
+
+[Download PNG](docs/carepoint-github-qr.png) · [Download SVG for printing](docs/carepoint-github-qr.svg)
+
 ## Windows without Docker (recommended for direct installation)
 
 From PowerShell, install the two prerequisites once:
